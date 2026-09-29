@@ -1,0 +1,164 @@
+### ==============================================================================
+### RITMO CLARO API - BATERÍA DE PRUEBAS MANUALES (REST CLIENT / POSTMAN)
+### ==============================================================================
+@baseUrl = http://localhost:3000
+@adminEmail = admin@ritmoclaro.com
+@adminPassword = AdminPassword2026!
+
+### ------------------------------------------------------------------------------
+### 1. AUTENTICACIÓN
+### ------------------------------------------------------------------------------
+
+### 1.1 Registro de Usuario Normal (201 Created)
+# @name registerUsuario
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "nombre": "Carlos Mendoza",
+  "email": "carlos.mendoza@empresa.com",
+  "password": "Password123!"
+}
+
+### 1.2 Intento de Registro con Email Duplicado (409 Conflict)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "nombre": "Carlos Mendoza",
+  "email": "carlos.mendoza@empresa.com",
+  "password": "Password123!"
+}
+
+### 1.3 Intento de Inyección de Rol en Registro (400 Bad Request)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "nombre": "Hacker Intruso",
+  "email": "hacker@test.com",
+  "password": "Password123!",
+  "rol": "ADMIN"
+}
+
+### 1.4 Login de Usuario Normal (200 OK)
+# @name loginUsuario
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "carlos.mendoza@empresa.com",
+  "password": "Password123!"
+}
+
+### Guardar Token de Usuario
+@userToken = {{loginUsuario.response.body.access_token}}
+
+### 1.5 Login con Credenciales Erróneas (401 Unauthorized)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "carlos.mendoza@empresa.com",
+  "password": "PasswordIncorrecta!"
+}
+
+### 1.6 Login de Administrador (200 OK)
+# @name loginAdmin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{adminEmail}}",
+  "password": "{{adminPassword}}"
+}
+
+### Guardar Token de Admin
+@adminToken = {{loginAdmin.response.body.access_token}}
+
+
+### ------------------------------------------------------------------------------
+### 2. CRUD DE HÁBITOS (USUARIO REGULAR)
+### ------------------------------------------------------------------------------
+
+### 2.1 Intentar Crear Hábito sin Autenticación (401 Unauthorized)
+POST {{baseUrl}}/habitos
+Content-Type: application/json
+
+{
+  "nombre": "Meditación 10 min",
+  "frecuencia": "DIARIA"
+}
+
+### 2.2 Crear Hábito con Datos Inválidos - Nombre Corto (400 Bad Request)
+POST {{baseUrl}}/habitos
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "nombre": "No",
+  "frecuencia": "DIARIA"
+}
+
+### 2.3 Crear Hábito Exitoso (201 Created)
+# @name crearHabito
+POST {{baseUrl}}/habitos
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "nombre": "Meditación y Mindfulness",
+  "descripcion": "Sesión de respiración antes de iniciar el trabajo",
+  "estado": "ACTIVO",
+  "frecuencia": "DIARIA"
+}
+
+@habitoId = {{crearHabito.response.body.id}}
+
+### 2.4 Listar Únicamente Hábitos Propios (200 OK)
+GET {{baseUrl}}/habitos
+Authorization: Bearer {{userToken}}
+
+### 2.5 Consultar Hábito Propio por ID (200 OK)
+GET {{baseUrl}}/habitos/{{habitoId}}
+Authorization: Bearer {{userToken}}
+
+### 2.6 Modificar Parcialmente Hábito Propio (200 OK)
+PATCH {{baseUrl}}/habitos/{{habitoId}}
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "estado": "PAUSADO",
+  "descripcion": "Pausado temporalmente por semana de vacaciones"
+}
+
+### 2.7 Consultar Hábito Inexistente o Ajeno (404 Not Found)
+GET {{baseUrl}}/habitos/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{userToken}}
+
+
+### ------------------------------------------------------------------------------
+### 3. CONTROL DE ROLES Y RUTA ADMINISTRATIVA
+### ------------------------------------------------------------------------------
+
+### 3.1 Intentar Acceder a Ruta Admin con Usuario Normal (403 Forbidden)
+GET {{baseUrl}}/habitos/admin/todos
+Authorization: Bearer {{userToken}}
+
+### 3.2 Acceder a Ruta Admin con Rol ADMIN (200 OK)
+GET {{baseUrl}}/habitos/admin/todos
+Authorization: Bearer {{adminToken}}
+
+
+### ------------------------------------------------------------------------------
+### 4. ELIMINACIÓN DE RECURSOS
+### ------------------------------------------------------------------------------
+
+### 4.1 Eliminar Hábito Propio (200 OK)
+DELETE {{baseUrl}}/habitos/{{habitoId}}
+Authorization: Bearer {{userToken}}
+
+### 4.2 Confirmar que ya no existe (404 Not Found)
+GET {{baseUrl}}/habitos/{{habitoId}}
+Authorization: Bearer {{userToken}}
