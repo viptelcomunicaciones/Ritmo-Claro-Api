@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -15,9 +17,10 @@ import { UpdateHabitoDto } from './dto/update-habito.dto';
 import { HabitosService } from './habitos.service';
 
 /**
- * Controlador de Hábitos.
+ * Controlador REST de Hábitos.
  * REGLA DE IDENTIDAD: usuarioId se extrae exclusivamente del JWT mediante @UsuarioActual('id').
- * REGLA DE PRIVACIDAD: Las operaciones quedan protegidas por JwtAuthGuard.
+ * REGLA DE PRIVACIDAD: Protegido por JwtAuthGuard.
+ * SEPARACIÓN DE RESPONSABILIDADES: El controller solo interpreta HTTP y delega al service.
  */
 @Controller('habitos')
 @UseGuards(JwtAuthGuard)
@@ -30,6 +33,7 @@ export class HabitosController {
   }
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   create(@UsuarioActual('id') usuarioId: string, @Body() dto: CreateHabitoDto) {
     return this.habitosService.create(usuarioId, dto);
   }
@@ -54,6 +58,7 @@ export class HabitosController {
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.OK)
   remove(@UsuarioActual('id') usuarioId: string, @Param('id') id: string) {
     return this.habitosService.remove(usuarioId, id);
   }
