@@ -14,6 +14,7 @@ import {
 export class RegisterDto {
   @IsString({ message: 'El nombre debe ser una cadena de texto' })
   @IsNotEmpty({ message: 'El nombre no puede estar vacío' })
+  @MinLength(2, { message: 'El nombre debe tener al menos 2 caracteres' })
   @MaxLength(100, { message: 'El nombre no puede exceder 100 caracteres' })
   nombre!: string;
 

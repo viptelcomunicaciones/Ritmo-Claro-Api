@@ -162,3 +162,92 @@ Authorization: Bearer {{userToken}}
 ### 4.2 Confirmar que ya no existe (404 Not Found)
 GET {{baseUrl}}/habitos/{{habitoId}}
 Authorization: Bearer {{userToken}}
+
+
+### ------------------------------------------------------------------------------
+### 5. PRUEBAS DE VALIDACIÓN, ERRORES ESTRUCTURADOS Y SEGURIDAD (PARTE 7)
+### Contrato uniforme: { "statusCode", "timestamp", "path", "message" }
+### ------------------------------------------------------------------------------
+
+### 5.1 Error 400: Registro con nombre menor a 2 caracteres
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "nombre": "A",
+  "email": "error400@test.com",
+  "password": "Password123!"
+}
+
+### 5.2 Error 400: Registro con email inválido
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "nombre": "Usuario Prueba",
+  "email": "correo-sin-formato",
+  "password": "Password123!"
+}
+
+### 5.3 Error 400: Registro con campo no permitido (forbidNonWhitelisted)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "nombre": "Usuario Prueba",
+  "email": "inyeccion@test.com",
+  "password": "Password123!",
+  "rol": "ADMIN"
+}
+
+### 5.4 Error 400: Creación de hábito con frecuencia inventada
+POST {{baseUrl}}/habitos
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "nombre": "Hábito con Enum Inválido",
+  "frecuencia": "QUINCENAL_INVENTADA"
+}
+
+### 5.5 Error 400: Creación de hábito con nombre menor a 3 caracteres
+POST {{baseUrl}}/habitos
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "nombre": "No",
+  "frecuencia": "DIARIA"
+}
+
+### 5.6 Error 409: Registro con email repetido
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "nombre": "Carlos Mendoza Duplicado",
+  "email": "carlos.mendoza@empresa.com",
+  "password": "Password123!"
+}
+
+### 5.7 Error 401: Login con credenciales incorrectas (mensaje genérico)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "carlos.mendoza@empresa.com",
+  "password": "PasswordErronea!"
+}
+
+### 5.8 Error 401: Token alterado o manipulado
+GET {{baseUrl}}/habitos
+Authorization: Bearer {{userToken}}manipulado
+
+### 5.9 Error 403: Ownership - Intento de acceder a hábito ajeno
+GET {{baseUrl}}/habitos/{{habitoId}}
+Authorization: Bearer {{adminToken}}
+
+### 5.10 Error 404: Recurso no encontrado
+GET {{baseUrl}}/habitos/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{userToken}}
+

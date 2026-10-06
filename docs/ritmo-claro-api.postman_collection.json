@@ -386,6 +386,256 @@
           }
         }
       ]
+    },
+    {
+      "name": "4. Validaciones, Errores y Seguridad (Parte 7)",
+      "item": [
+        {
+          "name": "4.1 Registro - Nombre < 2 caracteres (400 Bad Request)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"A\",\n  \"email\": \"error400@test.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "4.2 Registro - Email Inválido (400 Bad Request)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Usuario Test\",\n  \"email\": \"correo-sin-formato\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "4.3 Registro - Inyección de Campo rol (400 Bad Request)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Usuario Test\",\n  \"email\": \"inyeccion@test.com\",\n  \"password\": \"Password123!\",\n  \"rol\": \"ADMIN\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "4.4 Hábitos - Enum Frecuencia Inválido (400 Bad Request)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Hábito con Enum Inválido\",\n  \"frecuencia\": \"QUINCENAL_INVENTADA\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/habitos",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos"]
+            }
+          }
+        },
+        {
+          "name": "4.5 Hábitos - Nombre < 3 caracteres (400 Bad Request)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"No\",\n  \"frecuencia\": \"DIARIA\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/habitos",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos"]
+            }
+          }
+        },
+        {
+          "name": "4.6 Registro - Email Duplicado (409 Conflict)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Usuario Duplicado\",\n  \"email\": \"carlos.mendoza@empresa.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "4.7 Login - Credenciales Inválidas (401 Unauthorized)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"carlos.mendoza@empresa.com\",\n  \"password\": \"PasswordErronea!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "4.8 Hábitos - Sin Token (401 Unauthorized)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/habitos",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos"]
+            }
+          }
+        },
+        {
+          "name": "4.9 Hábitos - Token Alterado (401 Unauthorized)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}alterado",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/habitos",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos"]
+            }
+          }
+        },
+        {
+          "name": "4.10 Hábitos - Ownership Ajeno (403 Forbidden)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/habitos/{{habitoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos", "{{habitoId}}"]
+            }
+          }
+        },
+        {
+          "name": "4.11 Hábitos - Recurso Inexistente (404 Not Found)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/habitos/00000000-0000-0000-0000-000000000000",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos", "00000000-0000-0000-0000-000000000000"]
+            }
+          }
+        }
+      ]
     }
   ]
 }
