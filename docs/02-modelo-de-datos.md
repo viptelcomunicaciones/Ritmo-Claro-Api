@@ -16,7 +16,7 @@ erDiagram
         string id PK "UUID v4"
         string nombre "Nombre completo"
         string email UK "Correo único"
-        string passwordHash "Hash Bcrypt (10 rondas)"
+        string passwordHash "Hash Bcrypt (bcryptjs, 10 rondas)"
         enum rol "USUARIO | ADMIN (default: USUARIO)"
         datetime creadoEn "Fecha de creación (now())"
     }

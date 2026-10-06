@@ -25,7 +25,7 @@ Este documento detalla las capas de seguridad implementadas en **Ritmo Claro API
 
 ## 2. Hashing de Contraseñas (Bcrypt)
 
-- **Librería:** `bcrypt`
+- **Librería:** `bcryptjs` (JavaScript puro, sin compilación nativa; misma API `hash`/`compare`)
 - **Factor de Costo (Salt Rounds):** `10`
 - **Flujo de Registro:**
   ```typescript
