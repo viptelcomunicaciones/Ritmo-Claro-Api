@@ -17,6 +17,11 @@
       "type": "string"
     },
     {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
       "key": "habitoId",
       "value": "",
       "type": "string"
@@ -90,7 +95,7 @@
           }
         },
         {
-          "name": "1.4 Login Válido (200 OK - Guarda Token)",
+          "name": "1.4 Login Usuario Normal (200 OK - Guarda token)",
           "event": [
             {
               "listen": "test",
@@ -99,7 +104,7 @@
                   "const response = pm.response.json();",
                   "if (response.access_token) {",
                   "    pm.collectionVariables.set('token', response.access_token);",
-                  "    console.log('Token guardado en variable {{token}}');",
+                  "    console.log('Token de usuario guardado en variable {{token}}');",
                   "}"
                 ],
                 "type": "text/javascript"
@@ -126,7 +131,22 @@
           }
         },
         {
-          "name": "1.5 Login Contraseña Incorrecta (401 Unauthorized)",
+          "name": "1.5 Login Admin (200 OK - Guarda adminToken)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.access_token) {",
+                  "    pm.collectionVariables.set('adminToken', response.access_token);",
+                  "    console.log('Token de admin guardado en variable {{adminToken}}');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -137,7 +157,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"ana.perez@ritmoclaro.com\",\n  \"password\": \"PasswordErrada999!\"\n}"
+              "raw": "{\n  \"email\": \"admin@ritmoclaro.com\",\n  \"password\": \"AdminPassword2026!\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
@@ -149,7 +169,7 @@
       ]
     },
     {
-      "name": "2. CRUD de Hábitos (Protegido con JWT)",
+      "name": "2. CRUD de Hábitos (Usuario Regular)",
       "item": [
         {
           "name": "2.1 Crear Hábito (201 Created - Guarda habitoId)",
@@ -161,7 +181,7 @@
                   "const response = pm.response.json();",
                   "if (response.id) {",
                   "    pm.collectionVariables.set('habitoId', response.id);",
-                  "    console.log('ID de hábito guardado en variable {{habitoId}}');",
+                  "    console.log('ID de hábito guardado en {{habitoId}}');",
                   "}"
                 ],
                 "type": "text/javascript"
@@ -293,9 +313,14 @@
               "path": ["habitos", "{{habitoId}}"]
             }
           }
-        },
+        }
+      ]
+    },
+    {
+      "name": "3. Control de Roles (RBAC y Ownership)",
+      "item": [
         {
-          "name": "2.6 Confirmar Eliminación (404 Not Found)",
+          "name": "3.1 Intento Acceso Ruta Admin con Usuario Normal (403 Forbidden)",
           "request": {
             "auth": {
               "type": "bearer",
@@ -310,9 +335,53 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/habitos/{{habitoId}}",
+              "raw": "{{baseUrl}}/habitos/admin/todos",
               "host": ["{{baseUrl}}"],
-              "path": ["habitos", "{{habitoId}}"]
+              "path": ["habitos", "admin", "todos"]
+            }
+          }
+        },
+        {
+          "name": "3.2 Consulta Global con Rol ADMIN (200 OK)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/habitos/admin/todos",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos", "admin", "todos"]
+            }
+          }
+        },
+        {
+          "name": "3.3 Acceso a Hábito Inexistente (404 Not Found)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/habitos/00000000-0000-0000-0000-000000000000",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos", "00000000-0000-0000-0000-000000000000"]
             }
           }
         }

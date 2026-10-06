@@ -11,16 +11,19 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Roles } from '../auth/roles.decorator';
+import { RolesGuard } from '../auth/roles.guard';
 import { UsuarioActual } from '../auth/usuario-actual.decorator';
+import { Rol } from '../generated/prisma/enums';
 import { CreateHabitoDto } from './dto/create-habito.dto';
 import { UpdateHabitoDto } from './dto/update-habito.dto';
 import { HabitosService } from './habitos.service';
 
 /**
  * Controlador REST de Hábitos.
- * REGLA DE IDENTIDAD: usuarioId se extrae exclusivamente del JWT mediante @UsuarioActual('id').
- * REGLA DE PRIVACIDAD: Protegido por JwtAuthGuard.
- * SEPARACIÓN DE RESPONSABILIDADES: El controller solo interpreta HTTP y delega al service.
+ * - Toda la ruta está protegida por JwtAuthGuard (Identidad).
+ * - GET admin/todos está protegido adicionalmente por RolesGuard y @Roles(Rol.ADMIN) (RBAC).
+ * - GET admin/todos está declarada ANTES de :id para evitar colisiones de enrutamiento.
  */
 @Controller('habitos')
 @UseGuards(JwtAuthGuard)
@@ -28,6 +31,8 @@ export class HabitosController {
   constructor(private readonly habitosService: HabitosService) {}
 
   @Get('admin/todos')
+  @UseGuards(RolesGuard)
+  @Roles(Rol.ADMIN)
   findAll() {
     return this.habitosService.findAll();
   }

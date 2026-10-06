@@ -1,7 +1,7 @@
 import {
+  ForbiddenException,
   Injectable,
   NotFoundException,
-  NotImplementedException,
 } from '@nestjs/common';
 import { EstadoHabito } from '../generated/prisma/enums';
 import { Habito } from '../generated/prisma/client';
@@ -46,18 +46,22 @@ export class HabitosService {
 
   /**
    * Obtiene un hábito por su ID verificando propiedad.
-   * Si no existe o pertenece a otro usuario, responde 404 (regla de privacidad).
+   * - Si no existe en la base de datos -> 404 Not Found.
+   * - Si existe pero pertenece a otro usuario -> 403 Forbidden.
    */
   async findOneByUser(usuarioId: string, id: string): Promise<Habito> {
-    const habito = await this.prisma.habito.findFirst({
-      where: {
-        id,
-        usuarioId,
-      },
+    const habito = await this.prisma.habito.findUnique({
+      where: { id },
     });
 
     if (!habito) {
       throw new NotFoundException('Hábito no encontrado');
+    }
+
+    if (habito.usuarioId !== usuarioId) {
+      throw new ForbiddenException(
+        'No tienes permiso para acceder a este hábito',
+      );
     }
 
     return habito;
@@ -72,7 +76,7 @@ export class HabitosService {
     id: string,
     dto: UpdateHabitoDto,
   ): Promise<Habito> {
-    // Validar existencia y propiedad
+    // Validar existencia (404) y propiedad (403)
     await this.findOneByUser(usuarioId, id);
 
     const dataToUpdate: {
@@ -107,7 +111,7 @@ export class HabitosService {
    * Elimina un hábito propio tras verificar propiedad.
    */
   async remove(usuarioId: string, id: string): Promise<DeleteHabitoResponse> {
-    // Validar existencia y propiedad
+    // Validar existencia (404) y propiedad (403)
     await this.findOneByUser(usuarioId, id);
 
     await this.prisma.habito.delete({
@@ -121,9 +125,24 @@ export class HabitosService {
   }
 
   /**
-   * Consulta administrativa global (se implementa en Parte 6).
+   * Consulta administrativa global (Rol ADMIN).
+   * Devuelve todos los hábitos con datos esenciales del autor,
+   * excluyendo estrictamente campos sensibles como passwordHash.
    */
-  findAll() {
-    throw new NotImplementedException('Pendiente: Parte 6');
+  async findAll() {
+    return this.prisma.habito.findMany({
+      include: {
+        usuario: {
+          select: {
+            id: true,
+            nombre: true,
+            email: true,
+            rol: true,
+            creadoEn: true,
+          },
+        },
+      },
+      orderBy: { creadoEn: 'desc' },
+    });
   }
 }
