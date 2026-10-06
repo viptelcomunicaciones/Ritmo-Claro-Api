@@ -6,19 +6,21 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { UsuarioActual } from '../auth/usuario-actual.decorator';
 import { CreateHabitoDto } from './dto/create-habito.dto';
 import { UpdateHabitoDto } from './dto/update-habito.dto';
 import { HabitosService } from './habitos.service';
 
 /**
- * Esqueleto (Parte 2). Pendiente: JwtAuthGuard + @CurrentUser (Parte 4/5) y
- * RolesGuard en la ruta admin (Parte 6). Por ahora `usuarioId` es un marcador.
- * `admin/todos` se declara ANTES de `:id` para que no sea capturada como un id.
+ * Controlador de Hábitos.
+ * REGLA DE IDENTIDAD: usuarioId se extrae exclusivamente del JWT mediante @UsuarioActual('id').
+ * REGLA DE PRIVACIDAD: Las operaciones quedan protegidas por JwtAuthGuard.
  */
-const USUARIO_ID_PENDIENTE = 'pendiente-jwt';
-
 @Controller('habitos')
+@UseGuards(JwtAuthGuard)
 export class HabitosController {
   constructor(private readonly habitosService: HabitosService) {}
 
@@ -28,27 +30,31 @@ export class HabitosController {
   }
 
   @Post()
-  create(@Body() dto: CreateHabitoDto) {
-    return this.habitosService.create(USUARIO_ID_PENDIENTE, dto);
+  create(@UsuarioActual('id') usuarioId: string, @Body() dto: CreateHabitoDto) {
+    return this.habitosService.create(usuarioId, dto);
   }
 
   @Get()
-  findAllByUser() {
-    return this.habitosService.findAllByUser(USUARIO_ID_PENDIENTE);
+  findAllByUser(@UsuarioActual('id') usuarioId: string) {
+    return this.habitosService.findAllByUser(usuarioId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.habitosService.findOneByUser(USUARIO_ID_PENDIENTE, id);
+  findOne(@UsuarioActual('id') usuarioId: string, @Param('id') id: string) {
+    return this.habitosService.findOneByUser(usuarioId, id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateHabitoDto) {
-    return this.habitosService.update(USUARIO_ID_PENDIENTE, id, dto);
+  update(
+    @UsuarioActual('id') usuarioId: string,
+    @Param('id') id: string,
+    @Body() dto: UpdateHabitoDto,
+  ) {
+    return this.habitosService.update(usuarioId, id, dto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.habitosService.remove(USUARIO_ID_PENDIENTE, id);
+  remove(@UsuarioActual('id') usuarioId: string, @Param('id') id: string) {
+    return this.habitosService.remove(usuarioId, id);
   }
 }
