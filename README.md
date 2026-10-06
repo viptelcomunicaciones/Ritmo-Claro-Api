@@ -1,98 +1,133 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Ritmo Claro API — Backend Profesional RESTful
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API RESTful desarrollada con **NestJS 11**, **PostgreSQL**, **Prisma 7**, **JWT**, **Passport** y **Helmet** para la gestión segura de hábitos personales, control de acceso basado en roles (**RBAC**) y validación estricta de propiedad de recursos (**Ownership**).
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 1. Características Principales
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **Arquitectura Modular:** Separación por módulos desacoplados (`AuthModule`, `HabitosModule`, `PrismaModule`).
+- **Autenticación Robusta:** Hashing de contraseñas con `bcryptjs` (10 rondas de salt) y tokens `JWT` firmados con vigencia de 1 hora.
+- **Control de Acceso (RBAC & Ownership):**
+  - Roles `USUARIO` y `ADMIN`.
+  - Endpoint administrativo global (`GET /habitos/admin/todos`) reservado estrictamente para `ADMIN`.
+  - Comprobación de propiedad: un usuario solo puede consultar, modificar o eliminar sus propios hábitos; intentos sobre recursos ajenos retornan `403 Forbidden`.
+- **Validaciones Estrictas:** `ValidationPipe` global con `whitelist: true`, `forbidNonWhitelisted: true` y `transform: true`.
+- **Contrato Uniforme de Errores (Zero Leakage):** Todas las excepciones (400, 401, 403, 404, 409, 500) devuelven el esquema `{ statusCode, timestamp, path, message }` sin exponer stack traces, hashes ni secretos de base de datos.
+- **Documentación Interactiva:** OpenAPI / Swagger disponible en `/docs` con soporte para autorización Bearer token.
 
-## Project setup
+---
 
-```bash
-$ pnpm install
-```
+## 2. Requisitos Previos
 
-## Compile and run the project
+- **Node.js:** Versión `>= 20.x` (Recomendado Node 22).
+- **pnpm:** Versión `>= 9.x`.
+- **PostgreSQL:** Instancia local o contenedor Docker en el puerto `5432`.
 
-```bash
-# development
-$ pnpm run start
+---
 
-# watch mode
-$ pnpm run start:dev
+## 3. Instalación y Configuración
 
-# production mode
-$ pnpm run start:prod
-```
+1. **Instalar dependencias:**
+   ```bash
+   pnpm install
+   ```
 
-## Run tests
+2. **Configurar variables de entorno:**
+   Copia el archivo de plantilla `.env.example` a `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+   Asegúrate de configurar los valores de conexión:
+   ```env
+   PORT=3000
+   NODE_ENV=development
+   DATABASE_URL="postgresql://postgres:tu_password@localhost:5432/ritmo-claro?schema=public"
+   JWT_SECRET="clave_secreta_super_segura_ritmo_claro_2026"
+   JWT_EXPIRES_IN="1h"
+   ```
 
-```bash
-# unit tests
-$ pnpm run test
+3. **Ejecutar migraciones de Prisma:**
+   ```bash
+   npx prisma migrate deploy
+   ```
 
-# e2e tests
-$ pnpm run test:e2e
+---
 
-# test coverage
-$ pnpm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## 4. Ejecución del Servidor
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+# Modo desarrollo con recarga automática
+pnpm start:dev
+
+# Compilar proyecto TypeScript
+pnpm build
+
+# Modo producción
+pnpm start:prod
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+El servidor iniciará por defecto en `http://localhost:3000`.
 
-## Resources
+---
 
-Check out a few resources that may come in handy when working with NestJS:
+## 5. Documentación Interactiva (Swagger / OpenAPI)
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Una vez iniciado el servidor, abre en tu navegador:
+```text
+http://localhost:3000/docs
+```
 
-## Support
+### Cómo probar endpoints protegidos en Swagger:
+1. Dirígete a la sección **auth** y ejecuta `POST /auth/login` con tus credenciales.
+2. Copia el valor de `access_token` retornado.
+3. Haz clic en el botón verde **Authorize** (ubicado en la parte superior derecha de la interfaz de Swagger).
+4. Pega el token JWT en el campo de texto (sin la palabra `Bearer`).
+5. Haz clic en **Authorize** y luego en **Close**. Ahora puedes ejecutar cualquiera de los endpoints protegidos bajo la etiqueta **habitos**.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+---
 
-## Stay in touch
+## 6. Colección de Postman
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+La colección de pruebas reproducible se encuentra en el repositorio:
+📁 `postman/Ritmo-Claro.postman_collection.json`
 
-## License
+### Instrucciones para Postman:
+1. Abre **Postman** y haz clic en **Import**.
+2. Selecciona el archivo `postman/Ritmo-Claro.postman_collection.json`.
+3. La colección incluye las siguientes variables precargadas (sin secretos vigentes):
+   - `baseUrl`: `http://localhost:3000`
+   - `token`: Cadena vacía (se autocompleta automáticamente al ejecutar `1.2 Login de Usuario Normal`).
+   - `adminToken`: Cadena vacía (se autocompleta automáticamente al ejecutar `1.3 Login de Administrador`).
+   - `habitoId`: Identificador UUID capturado tras la creación del hábito.
+4. Ejecuta la colección en orden numérico para comprobar el camino feliz, control de acceso de roles, validaciones y rechazos controlados.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+---
+
+## 7. Tabla de Endpoints de la API
+
+| Tag | Método | Ruta | Acceso | Descripción | Códigos HTTP |
+| :--- | :---: | :--- | :--- | :--- | :---: |
+| **auth** | `POST` | `/auth/register` | Público | Registro de usuario (nace como `USUARIO`) | `201`, `400`, `409` |
+| **auth** | `POST` | `/auth/login` | Público | Login y emisión de token JWT (1 hora) | `200`, `400`, `401` |
+| **habitos** | `GET` | `/habitos/admin/todos` | Bearer (`ADMIN`) | Listado global administrativo | `200`, `401`, `403` |
+| **habitos** | `POST` | `/habitos` | Bearer (`USUARIO`, `ADMIN`) | Crea hábito asociado al JWT del autor | `201`, `400`, `401` |
+| **habitos** | `GET` | `/habitos` | Bearer (`USUARIO`, `ADMIN`) | Lista únicamente hábitos propios | `200`, `401` |
+| **habitos** | `GET` | `/habitos/:id` | Bearer (`Ownership`) | Detalle de hábito propio | `200`, `401`, `403`, `404` |
+| **habitos** | `PATCH` | `/habitos/:id` | Bearer (`Ownership`) | Actualización parcial de hábito propio | `200`, `400`, `401`, `403`, `404` |
+| **habitos** | `DELETE`| `/habitos/:id` | Bearer (`Ownership`) | Eliminación de hábito propio | `200`, `401`, `403`, `404` |
+
+---
+
+## 8. Pruebas Automatizadas
+
+```bash
+# Ejecutar pruebas unitarias (filtro de excepciones, etc.)
+pnpm test
+
+# Ejecutar análisis de linter (ESLint)
+pnpm lint
+
+# Formatear código (Prettier)
+pnpm format
+```

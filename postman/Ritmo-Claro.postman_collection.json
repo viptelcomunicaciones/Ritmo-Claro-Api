@@ -1,0 +1,653 @@
+{
+  "info": {
+    "_postman_id": "a98e21bc-4521-4f12-9c31-ritmoclaro2026",
+    "name": "Ritmo Claro API - Colección Oficial",
+    "description": "Colección completa de pruebas para Ritmo Claro API. Incluye flujos positivos (camino feliz), negativos (validaciones), control de acceso por roles (RBAC) y control de propiedad de recursos (Ownership). Las variables baseUrl, token y adminToken están desacopladas y no contienen secretos vigentes.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "habitoId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Autenticación (Público)",
+      "item": [
+        {
+          "name": "1.1 Registro de Usuario Normal (201 Created)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Carlos Mendoza\",\n  \"email\": \"carlos.mendoza@empresa.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "1.2 Login de Usuario Normal (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.access_token) {",
+                  "    pm.collectionVariables.set('token', json.access_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"carlos.mendoza@empresa.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "1.3 Login de Administrador (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.access_token) {",
+                  "    pm.collectionVariables.set('adminToken', json.access_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@ritmoclaro.com\",\n  \"password\": \"AdminPassword2026!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. CRUD de Hábitos (Usuario Regular)",
+      "item": [
+        {
+          "name": "2.1 Crear Hábito (201 Created)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.id) {",
+                  "    pm.collectionVariables.set('habitoId', json.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Meditación y Mindfulness\",\n  \"descripcion\": \"Sesión de respiración antes de iniciar el trabajo\",\n  \"estado\": \"ACTIVO\",\n  \"frecuencia\": \"DIARIA\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/habitos",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos"]
+            }
+          }
+        },
+        {
+          "name": "2.2 Listar Hábitos Propios (200 OK)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/habitos",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos"]
+            }
+          }
+        },
+        {
+          "name": "2.3 Consultar Hábito Propio por ID (200 OK)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/habitos/{{habitoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos", "{{habitoId}}"]
+            }
+          }
+        },
+        {
+          "name": "2.4 Actualizar Parcialmente Hábito Propio (200 OK)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"PAUSADO\",\n  \"descripcion\": \"Pausado temporalmente por semana de vacaciones\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/habitos/{{habitoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos", "{{habitoId}}"]
+            }
+          }
+        },
+        {
+          "name": "2.5 Eliminar Hábito Propio (200 OK)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/habitos/{{habitoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos", "{{habitoId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Control de Acceso y Propiedad (Ownership)",
+      "item": [
+        {
+          "name": "3.1 Usuario B intenta consultar hábito de Usuario A (403 Forbidden)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/habitos/{{habitoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos", "{{habitoId}}"]
+            }
+          }
+        },
+        {
+          "name": "3.2 Usuario B intenta modificar hábito de Usuario A (403 Forbidden)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Nombre Modificado Ilegalmente\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/habitos/{{habitoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos", "{{habitoId}}"]
+            }
+          }
+        },
+        {
+          "name": "3.3 Usuario B intenta eliminar hábito de Usuario A (403 Forbidden)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/habitos/{{habitoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos", "{{habitoId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Roles y Administración (RBAC)",
+      "item": [
+        {
+          "name": "4.1 Usuario Normal intenta listar todos los hábitos (403 Forbidden)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/habitos/admin/todos",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos", "admin", "todos"]
+            }
+          }
+        },
+        {
+          "name": "4.2 Administrador lista todos los hábitos globalmente (200 OK)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/habitos/admin/todos",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos", "admin", "todos"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Matriz de Errores y Validaciones (Contrato de Error)",
+      "item": [
+        {
+          "name": "5.1 Error 400: Registro con nombre < 2 caracteres",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"A\",\n  \"email\": \"error400@test.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "5.2 Error 400: Registro con email inválido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Usuario Test\",\n  \"email\": \"formato-invalido\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "5.3 Error 400: Registro con contraseña < 8 caracteres",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Usuario Test\",\n  \"email\": \"passcorta@test.com\",\n  \"password\": \"123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "5.4 Error 400: Registro con campo 'rol' no permitido (forbidNonWhitelisted)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Usuario Inyector\",\n  \"email\": \"inyeccion@test.com\",\n  \"password\": \"Password123!\",\n  \"rol\": \"ADMIN\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "5.5 Error 400: Hábito con enum de frecuencia inválido",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Hábito con Enum Inválido\",\n  \"frecuencia\": \"QUINCENAL_INVENTADA\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/habitos",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos"]
+            }
+          }
+        },
+        {
+          "name": "5.6 Error 400: Hábito con nombre < 3 caracteres",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"No\",\n  \"frecuencia\": \"DIARIA\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/habitos",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos"]
+            }
+          }
+        },
+        {
+          "name": "5.7 Error 409: Registro con correo electrónico duplicado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Carlos Mendoza Duplicado\",\n  \"email\": \"carlos.mendoza@empresa.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "5.8 Error 401: Login con credenciales incorrectas (mensaje genérico)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"carlos.mendoza@empresa.com\",\n  \"password\": \"PasswordErronea!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "5.9 Error 401: Petición a recurso protegido sin token Bearer",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/habitos",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos"]
+            }
+          }
+        },
+        {
+          "name": "5.10 Error 401: Petición con token JWT alterado o corrupto",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}manipulado",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/habitos",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos"]
+            }
+          }
+        },
+        {
+          "name": "5.11 Error 404: Consulta de hábito con ID inexistente",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/habitos/00000000-0000-0000-0000-000000000000",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos", "00000000-0000-0000-0000-000000000000"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
