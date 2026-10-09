@@ -54,15 +54,13 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# Copiar artefactos de compilación y dependencias de producción
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
-
-# Asignar permisos al usuario sin privilegios 'node' incluido en la imagen base
-RUN chown -R node:node /app
+# Copiar artefactos y dependencias asignando propiedad directa al usuario 'node'
+# (Evita la capa lenta 'RUN chown -R' que se congela en servidores y VPS con IOPS limitados)
+COPY --chown=node:node --from=builder /app/package.json ./package.json
+COPY --chown=node:node --from=builder /app/node_modules ./node_modules
+COPY --chown=node:node --from=builder /app/dist ./dist
+COPY --chown=node:node --from=builder /app/prisma ./prisma
+COPY --chown=node:node --from=builder /app/prisma.config.ts ./prisma.config.ts
 
 USER node
 
