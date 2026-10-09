@@ -1,0 +1,943 @@
+{
+	"id": "7fdb190d-7348-49ac-9a1c-025bf3299294",
+	"name": "Ritmo Claro API - Colección Oficial",
+	"timestamp": "2026-10-09T16:39:53.377Z",
+	"collection_id": "49740027-268c7322-d589-4ecb-87cf-b697128534a5",
+	"folder_id": 0,
+	"environment_id": "0",
+	"totalPass": 41,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2026-10-09T16:39:49.931Z",
+	"totalFail": 0,
+	"results": [
+		{
+			"id": "6533f024-f78b-4c8c-85d6-5724aeafe314",
+			"name": "1.1 Registro de Usuario A (201 Created)",
+			"url": "http://localhost:3000/auth/register",
+			"time": 357,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code es 201 Created": true,
+				"No expone passwordHash": true
+			},
+			"testPassFailCounts": {
+				"Status code es 201 Created": {
+					"pass": 1,
+					"fail": 0
+				},
+				"No expone passwordHash": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				357
+			],
+			"allTests": [
+				{
+					"Status code es 201 Created": true,
+					"No expone passwordHash": true
+				}
+			]
+		},
+		{
+			"id": "d8088f10-3b07-43f6-bee7-4fa3a7f24c0a",
+			"name": "1.2 Login de Usuario A (200 OK)",
+			"url": "http://localhost:3000/auth/login",
+			"time": 71,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code es 200 OK": true,
+				"Captura access_token de Usuario A": true
+			},
+			"testPassFailCounts": {
+				"Status code es 200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Captura access_token de Usuario A": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				71
+			],
+			"allTests": [
+				{
+					"Status code es 200 OK": true,
+					"Captura access_token de Usuario A": true
+				}
+			]
+		},
+		{
+			"id": "fdb4ac60-e4ae-4bbf-9131-3f9851dd15f8",
+			"name": "1.3 Registro de Usuario B (201 Created)",
+			"url": "http://localhost:3000/auth/register",
+			"time": 70,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code es 201 Created": true
+			},
+			"testPassFailCounts": {
+				"Status code es 201 Created": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				70
+			],
+			"allTests": [
+				{
+					"Status code es 201 Created": true
+				}
+			]
+		},
+		{
+			"id": "fb66357b-588a-4ff8-90b6-fa7a1df55af4",
+			"name": "1.4 Login de Usuario B (200 OK)",
+			"url": "http://localhost:3000/auth/login",
+			"time": 65,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code es 200 OK": true,
+				"Captura tokenB de Usuario B": true
+			},
+			"testPassFailCounts": {
+				"Status code es 200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Captura tokenB de Usuario B": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				65
+			],
+			"allTests": [
+				{
+					"Status code es 200 OK": true,
+					"Captura tokenB de Usuario B": true
+				}
+			]
+		},
+		{
+			"id": "0eb85d1f-49a8-43f0-b4e8-fe32e47bb5de",
+			"name": "1.5 Login de Administrador (200 OK)",
+			"url": "http://localhost:3000/auth/login",
+			"time": 78,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code es 200 OK": true,
+				"Captura adminToken": true
+			},
+			"testPassFailCounts": {
+				"Status code es 200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Captura adminToken": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				78
+			],
+			"allTests": [
+				{
+					"Status code es 200 OK": true,
+					"Captura adminToken": true
+				}
+			]
+		},
+		{
+			"id": "9d9505a7-34b5-4351-a96e-54959f11fbaa",
+			"name": "2.1 Crear Hábito de Usuario A (201 Created)",
+			"url": "http://localhost:3000/habitos",
+			"time": 15,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code es 201 Created": true,
+				"Captura habitoId generado": true
+			},
+			"testPassFailCounts": {
+				"Status code es 201 Created": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Captura habitoId generado": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				15
+			],
+			"allTests": [
+				{
+					"Status code es 201 Created": true,
+					"Captura habitoId generado": true
+				}
+			]
+		},
+		{
+			"id": "12a92b29-6226-436a-bcd8-f02fa56d8800",
+			"name": "2.2 Listar Hábitos Propios de Usuario A (200 OK)",
+			"url": "http://localhost:3000/habitos",
+			"time": 15,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code es 200 OK": true,
+				"Devuelve lista de hábitos": true
+			},
+			"testPassFailCounts": {
+				"Status code es 200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Devuelve lista de hábitos": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				15
+			],
+			"allTests": [
+				{
+					"Status code es 200 OK": true,
+					"Devuelve lista de hábitos": true
+				}
+			]
+		},
+		{
+			"id": "6900242d-b167-4b9e-8ed8-f85a16e37f39",
+			"name": "2.3 Consultar Hábito Propio por ID (200 OK)",
+			"url": "http://localhost:3000/habitos/1098c8db-4b2f-4ed5-9a2e-5693c3920fc8",
+			"time": 6,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code es 200 OK": true,
+				"Retorna el hábito correcto": true
+			},
+			"testPassFailCounts": {
+				"Status code es 200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Retorna el hábito correcto": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				6
+			],
+			"allTests": [
+				{
+					"Status code es 200 OK": true,
+					"Retorna el hábito correcto": true
+				}
+			]
+		},
+		{
+			"id": "3eab5058-ad14-4944-b903-4ed22fbb9749",
+			"name": "2.4 Actualizar Parcialmente Hábito Propio (200 OK)",
+			"url": "http://localhost:3000/habitos/1098c8db-4b2f-4ed5-9a2e-5693c3920fc8",
+			"time": 12,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code es 200 OK": true,
+				"Conserva nombre y actualiza estado": true
+			},
+			"testPassFailCounts": {
+				"Status code es 200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Conserva nombre y actualiza estado": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				12
+			],
+			"allTests": [
+				{
+					"Status code es 200 OK": true,
+					"Conserva nombre y actualiza estado": true
+				}
+			]
+		},
+		{
+			"id": "101d6f36-e007-4095-b69f-edb0be5c4b83",
+			"name": "3.1 Usuario B intenta consultar hábito de Usuario A (403 Forbidden)",
+			"url": "http://localhost:3000/habitos/1098c8db-4b2f-4ed5-9a2e-5693c3920fc8",
+			"time": 5,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"Status code es 403 Forbidden": true,
+				"Mensaje de violación de propiedad": true
+			},
+			"testPassFailCounts": {
+				"Status code es 403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Mensaje de violación de propiedad": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				5
+			],
+			"allTests": [
+				{
+					"Status code es 403 Forbidden": true,
+					"Mensaje de violación de propiedad": true
+				}
+			]
+		},
+		{
+			"id": "2a7f1c97-4b7d-4d4d-9730-3a19279f21bd",
+			"name": "3.2 Usuario B intenta modificar hábito de Usuario A (403 Forbidden)",
+			"url": "http://localhost:3000/habitos/1098c8db-4b2f-4ed5-9a2e-5693c3920fc8",
+			"time": 4,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"Status code es 403 Forbidden": true
+			},
+			"testPassFailCounts": {
+				"Status code es 403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				4
+			],
+			"allTests": [
+				{
+					"Status code es 403 Forbidden": true
+				}
+			]
+		},
+		{
+			"id": "e477e095-ff5a-4612-91c5-0969d77ba6fa",
+			"name": "3.3 Usuario B intenta eliminar hábito de Usuario A (403 Forbidden)",
+			"url": "http://localhost:3000/habitos/1098c8db-4b2f-4ed5-9a2e-5693c3920fc8",
+			"time": 6,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"Status code es 403 Forbidden": true
+			},
+			"testPassFailCounts": {
+				"Status code es 403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				6
+			],
+			"allTests": [
+				{
+					"Status code es 403 Forbidden": true
+				}
+			]
+		},
+		{
+			"id": "3d78b0d9-9e68-49d4-a5b7-95e3e254c4e6",
+			"name": "4.1 Usuario Normal intenta listar todos los hábitos (403 Forbidden)",
+			"url": "http://localhost:3000/habitos/admin/todos",
+			"time": 3,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"Status code es 403 Forbidden": true
+			},
+			"testPassFailCounts": {
+				"Status code es 403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Status code es 403 Forbidden": true
+				}
+			]
+		},
+		{
+			"id": "cd5b8df9-88c3-4efe-aba1-e49b917e82e6",
+			"name": "4.2 Administrador lista todos los hábitos globalmente (200 OK)",
+			"url": "http://localhost:3000/habitos/admin/todos",
+			"time": 8,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code es 200 OK": true,
+				"No incluye passwordHash del autor": true
+			},
+			"testPassFailCounts": {
+				"Status code es 200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"No incluye passwordHash del autor": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				8
+			],
+			"allTests": [
+				{
+					"Status code es 200 OK": true,
+					"No incluye passwordHash del autor": true
+				}
+			]
+		},
+		{
+			"id": "e5bbc62b-4c08-487d-8743-b2d6cd56b1db",
+			"name": "5.1 Eliminar Hábito Propio (200 OK)",
+			"url": "http://localhost:3000/habitos/1098c8db-4b2f-4ed5-9a2e-5693c3920fc8",
+			"time": 5,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code es 200 OK": true
+			},
+			"testPassFailCounts": {
+				"Status code es 200 OK": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				5
+			],
+			"allTests": [
+				{
+					"Status code es 200 OK": true
+				}
+			]
+		},
+		{
+			"id": "ede34723-b859-4800-b3c8-fe4c1b8cf848",
+			"name": "5.2 Comprobar que ya no existe (404 Not Found)",
+			"url": "http://localhost:3000/habitos/1098c8db-4b2f-4ed5-9a2e-5693c3920fc8",
+			"time": 3,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found"
+			},
+			"tests": {
+				"Status code es 404 Not Found": true
+			},
+			"testPassFailCounts": {
+				"Status code es 404 Not Found": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Status code es 404 Not Found": true
+				}
+			]
+		},
+		{
+			"id": "284ad7d9-693a-43f4-aba4-cf7eb0c3f9e8",
+			"name": "6.1 Error 400: Registro con nombre < 2 caracteres",
+			"url": "http://localhost:3000/auth/register",
+			"time": 4,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status code es 400 Bad Request": true,
+				"Cumple contrato de error { statusCode, timestamp, path, message }": true
+			},
+			"testPassFailCounts": {
+				"Status code es 400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Cumple contrato de error { statusCode, timestamp, path, message }": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				4
+			],
+			"allTests": [
+				{
+					"Status code es 400 Bad Request": true,
+					"Cumple contrato de error { statusCode, timestamp, path, message }": true
+				}
+			]
+		},
+		{
+			"id": "5155695a-de5b-4ca7-97bc-2d9904d3713a",
+			"name": "6.2 Error 400: Registro con email inválido",
+			"url": "http://localhost:3000/auth/register",
+			"time": 2,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status code es 400 Bad Request": true
+			},
+			"testPassFailCounts": {
+				"Status code es 400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				2
+			],
+			"allTests": [
+				{
+					"Status code es 400 Bad Request": true
+				}
+			]
+		},
+		{
+			"id": "4eed505c-e56e-47b9-8209-49edc732d491",
+			"name": "6.3 Error 400: Registro con contraseña < 8 caracteres",
+			"url": "http://localhost:3000/auth/register",
+			"time": 3,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status code es 400 Bad Request": true
+			},
+			"testPassFailCounts": {
+				"Status code es 400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Status code es 400 Bad Request": true
+				}
+			]
+		},
+		{
+			"id": "a2e5f1db-8402-4bdc-981b-a8cede37dc26",
+			"name": "6.4 Error 400: Registro con campo 'rol' no permitido (forbidNonWhitelisted)",
+			"url": "http://localhost:3000/auth/register",
+			"time": 2,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status code es 400 Bad Request": true
+			},
+			"testPassFailCounts": {
+				"Status code es 400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				2
+			],
+			"allTests": [
+				{
+					"Status code es 400 Bad Request": true
+				}
+			]
+		},
+		{
+			"id": "8d18eab5-d0fe-480f-9535-de5825bdbace",
+			"name": "6.5 Error 400: Hábito con enum de frecuencia inválido",
+			"url": "http://localhost:3000/habitos",
+			"time": 3,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status code es 400 Bad Request": true
+			},
+			"testPassFailCounts": {
+				"Status code es 400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Status code es 400 Bad Request": true
+				}
+			]
+		},
+		{
+			"id": "cde27bd9-082e-4476-9f77-9c75f13234cb",
+			"name": "6.6 Error 400: Hábito con nombre < 3 caracteres",
+			"url": "http://localhost:3000/habitos",
+			"time": 3,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status code es 400 Bad Request": true
+			},
+			"testPassFailCounts": {
+				"Status code es 400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Status code es 400 Bad Request": true
+				}
+			]
+		},
+		{
+			"id": "d0374e0a-191d-40b8-8042-ca3c432c07d9",
+			"name": "6.7 Error 409: Registro con correo electrónico duplicado",
+			"url": "http://localhost:3000/auth/register",
+			"time": 3,
+			"responseCode": {
+				"code": 409,
+				"name": "Conflict"
+			},
+			"tests": {
+				"Status code es 409 Conflict": true,
+				"Mensaje de correo ya registrado": true
+			},
+			"testPassFailCounts": {
+				"Status code es 409 Conflict": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Mensaje de correo ya registrado": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Status code es 409 Conflict": true,
+					"Mensaje de correo ya registrado": true
+				}
+			]
+		},
+		{
+			"id": "1d31e3f4-77b3-470f-aef4-67802951204a",
+			"name": "6.8 Error 401: Login con credenciales incorrectas (mensaje genérico)",
+			"url": "http://localhost:3000/auth/login",
+			"time": 66,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"Status code es 401 Unauthorized": true,
+				"Mensaje genérico sin enumeración": true
+			},
+			"testPassFailCounts": {
+				"Status code es 401 Unauthorized": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Mensaje genérico sin enumeración": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				66
+			],
+			"allTests": [
+				{
+					"Status code es 401 Unauthorized": true,
+					"Mensaje genérico sin enumeración": true
+				}
+			]
+		},
+		{
+			"id": "b2b1226f-a24c-4f3f-89db-05d38ea6a0e5",
+			"name": "6.9 Error 401: Petición a recurso protegido sin token Bearer",
+			"url": "http://localhost:3000/habitos",
+			"time": 2,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"Status code es 401 Unauthorized": true
+			},
+			"testPassFailCounts": {
+				"Status code es 401 Unauthorized": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				2
+			],
+			"allTests": [
+				{
+					"Status code es 401 Unauthorized": true
+				}
+			]
+		},
+		{
+			"id": "63865170-eff0-4c54-920e-2f9169c2edeb",
+			"name": "6.10 Error 401: Petición con token JWT alterado o corrupto",
+			"url": "http://localhost:3000/habitos",
+			"time": 2,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"Status code es 401 Unauthorized": true
+			},
+			"testPassFailCounts": {
+				"Status code es 401 Unauthorized": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				2
+			],
+			"allTests": [
+				{
+					"Status code es 401 Unauthorized": true
+				}
+			]
+		},
+		{
+			"id": "04f2aafc-7c4f-43be-906d-acd6d22661f3",
+			"name": "6.11 Error 404: Consulta de hábito con ID inexistente",
+			"url": "http://localhost:3000/habitos/00000000-0000-0000-0000-000000000000",
+			"time": 3,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found"
+			},
+			"tests": {
+				"Status code es 404 Not Found": true,
+				"Mensaje de hábito no encontrado": true
+			},
+			"testPassFailCounts": {
+				"Status code es 404 Not Found": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Mensaje de hábito no encontrado": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Status code es 404 Not Found": true,
+					"Mensaje de hábito no encontrado": true
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 816,
+	"collection": {
+		"requests": [
+			{
+				"id": "6533f024-f78b-4c8c-85d6-5724aeafe314",
+				"method": "POST"
+			},
+			{
+				"id": "d8088f10-3b07-43f6-bee7-4fa3a7f24c0a",
+				"method": "POST"
+			},
+			{
+				"id": "fdb4ac60-e4ae-4bbf-9131-3f9851dd15f8",
+				"method": "POST"
+			},
+			{
+				"id": "fb66357b-588a-4ff8-90b6-fa7a1df55af4",
+				"method": "POST"
+			},
+			{
+				"id": "0eb85d1f-49a8-43f0-b4e8-fe32e47bb5de",
+				"method": "POST"
+			},
+			{
+				"id": "9d9505a7-34b5-4351-a96e-54959f11fbaa",
+				"method": "POST"
+			},
+			{
+				"id": "12a92b29-6226-436a-bcd8-f02fa56d8800",
+				"method": "GET"
+			},
+			{
+				"id": "6900242d-b167-4b9e-8ed8-f85a16e37f39",
+				"method": "GET"
+			},
+			{
+				"id": "3eab5058-ad14-4944-b903-4ed22fbb9749",
+				"method": "PATCH"
+			},
+			{
+				"id": "101d6f36-e007-4095-b69f-edb0be5c4b83",
+				"method": "GET"
+			},
+			{
+				"id": "2a7f1c97-4b7d-4d4d-9730-3a19279f21bd",
+				"method": "PATCH"
+			},
+			{
+				"id": "e477e095-ff5a-4612-91c5-0969d77ba6fa",
+				"method": "DELETE"
+			},
+			{
+				"id": "3d78b0d9-9e68-49d4-a5b7-95e3e254c4e6",
+				"method": "GET"
+			},
+			{
+				"id": "cd5b8df9-88c3-4efe-aba1-e49b917e82e6",
+				"method": "GET"
+			},
+			{
+				"id": "e5bbc62b-4c08-487d-8743-b2d6cd56b1db",
+				"method": "DELETE"
+			},
+			{
+				"id": "ede34723-b859-4800-b3c8-fe4c1b8cf848",
+				"method": "GET"
+			},
+			{
+				"id": "284ad7d9-693a-43f4-aba4-cf7eb0c3f9e8",
+				"method": "POST"
+			},
+			{
+				"id": "5155695a-de5b-4ca7-97bc-2d9904d3713a",
+				"method": "POST"
+			},
+			{
+				"id": "4eed505c-e56e-47b9-8209-49edc732d491",
+				"method": "POST"
+			},
+			{
+				"id": "a2e5f1db-8402-4bdc-981b-a8cede37dc26",
+				"method": "POST"
+			},
+			{
+				"id": "8d18eab5-d0fe-480f-9535-de5825bdbace",
+				"method": "POST"
+			},
+			{
+				"id": "cde27bd9-082e-4476-9f77-9c75f13234cb",
+				"method": "POST"
+			},
+			{
+				"id": "d0374e0a-191d-40b8-8042-ca3c432c07d9",
+				"method": "POST"
+			},
+			{
+				"id": "1d31e3f4-77b3-470f-aef4-67802951204a",
+				"method": "POST"
+			},
+			{
+				"id": "b2b1226f-a24c-4f3f-89db-05d38ea6a0e5",
+				"method": "GET"
+			},
+			{
+				"id": "63865170-eff0-4c54-920e-2f9169c2edeb",
+				"method": "GET"
+			},
+			{
+				"id": "04f2aafc-7c4f-43be-906d-acd6d22661f3",
+				"method": "GET"
+			}
+		]
+	}
+}
