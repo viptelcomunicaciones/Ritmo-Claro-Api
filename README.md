@@ -131,3 +131,57 @@ pnpm lint
 # Formatear código (Prettier)
 pnpm format
 ```
+
+---
+
+## 9. Despliegue con Docker y Docker Compose
+
+El proyecto cuenta con un `Dockerfile` multi-stage optimizado para producción sobre Alpine Linux y un `docker-compose.yml` para orquestación completa con PostgreSQL.
+
+### Construir la imagen de Docker localmente:
+```bash
+docker build -t ritmo-claro-api:latest .
+```
+
+### Ejecutar con Docker Compose (Base de datos + API):
+```bash
+docker compose up -d --build
+```
+> El servicio de PostgreSQL iniciará en el puerto `5433` (mapeado para no colisionar con instalaciones locales) y la API en el puerto `3000`.
+
+---
+
+## 10. Despliegue en Dokploy
+
+Este repositorio está preparado para ser desplegado como una **Application** en [Dokploy](https://dokploy.com/) conectado a un servicio de base de datos PostgreSQL administrado.
+
+### Paso 1: Crear la Base de Datos en Dokploy
+1. En el panel de Dokploy, ve a **Projects** -> Selecciona tu proyecto.
+2. Crea un nuevo servicio tipo **Database** -> **PostgreSQL**.
+3. Asigna un nombre a la base de datos (ej. `ritmo-claro-db`).
+4. Dokploy te proporcionará las credenciales y la URL de conexión interna (ej. `postgresql://postgres:password@postgres-service:5432/ritmo_claro?schema=public`).
+
+### Paso 2: Crear la Aplicación en Dokploy
+1. En el mismo proyecto, crea un nuevo servicio tipo **Application**.
+2. **Provider**: Selecciona `GitHub` y vincula este repositorio (`ritmo-claro-api`).
+3. **Branch**: `main`.
+4. **Build Type**: Selecciona **Dockerfile** (Dokploy detectará automáticamente el archivo `Dockerfile` en la raíz).
+
+### Paso 3: Configurar Variables de Entorno en Dokploy
+En la pestaña **Environment** de la aplicación en Dokploy, agrega:
+```env
+NODE_ENV=production
+PORT=3000
+DATABASE_URL=postgresql://usuario:contraseña@host-de-postgres-en-dokploy:5432/ritmo_claro?schema=public
+JWT_SECRET=tu_clave_secreta_de_produccion_super_segura
+JWT_EXPIRES_IN=24h
+THROTTLE_TTL=60000
+THROTTLE_LIMIT=100
+```
+
+### Paso 4: Desplegar
+1. Haz clic en **Deploy**.
+2. Dokploy clonará el repositorio, ejecutará el build multi-stage y arrancará el contenedor.
+3. El comando de inicio (`CMD`) ejecutará de forma automática `npx prisma migrate deploy` aplicando las migraciones a la base de datos de Dokploy antes de encender el servidor NestJS en `http://0.0.0.0:3000`.
+4. Asigna tu dominio o subdominio en la pestaña **Domains** de Dokploy para exponer la API con SSL/HTTPS automático.
+

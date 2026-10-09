@@ -1,0 +1,43 @@
+# ==============================================================================
+# .dockerignore — RITMO CLARO API
+# Excluye del contexto de Docker secretos, dependencias y archivos innecesarios
+# ==============================================================================
+
+# Variables de entorno y secretos locales (NUNCA empaquetar en la imagen)
+.env
+.env.*
+!.env.example
+
+# Dependencias locales y compilados de la máquina anfitriona
+node_modules
+dist
+src/generated
+
+# Control de versiones
+.git
+.gitignore
+.github
+
+# Logs y reportes de error
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Cobertura de pruebas y resultados de Postman
+test
+coverage
+postman/*.test_run.json
+
+# Editores y sistemas operativos
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+*.sublime-workspace
+
+# Archivos temporales
+.temp
+.tmp

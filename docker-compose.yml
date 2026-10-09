@@ -1,0 +1,49 @@
+# ==============================================================================
+# DOCKER COMPOSE — RITMO CLARO API
+# Orquestación local para pruebas de contenedor con PostgreSQL
+# ==============================================================================
+
+services:
+  # Base de Datos PostgreSQL
+  db:
+    image: postgres:17-alpine
+    container_name: ritmo-claro-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-ritmo_claro_docker}
+    ports:
+      - "5433:5432" # Puerto 5433 para evitar colisión si ya hay un Postgres en el puerto 5432 local
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-ritmo_claro_docker}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Aplicación NestJS
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ritmo-claro-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      PORT: 3000
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-ritmo_claro_docker}?schema=public
+      JWT_SECRET: ${JWT_SECRET:-secret_jwt_para_pruebas_locales_docker_2026_super_seguro}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-24h}
+      THROTTLE_TTL: ${THROTTLE_TTL:-60000}
+      THROTTLE_LIMIT: ${THROTTLE_LIMIT:-100}
+
+volumes:
+  postgres_data:
+    driver: local
