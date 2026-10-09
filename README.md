@@ -2,6 +2,11 @@
 
 API RESTful desarrollada con **NestJS 11**, **PostgreSQL**, **Prisma 7**, **JWT**, **Passport** y **Helmet** para la gestión segura de hábitos personales, control de acceso basado en roles (**RBAC**) y validación estricta de propiedad de recursos (**Ownership**).
 
+> 🌐 **Despliegue en Producción (Dokploy):**  
+> - **Swagger UI Interactivo:** [https://p2.dev.viptelcomunicaciones.com/docs](https://p2.dev.viptelcomunicaciones.com/docs)  
+> - **OpenAPI JSON:** [https://p2.dev.viptelcomunicaciones.com/docs-json](https://p2.dev.viptelcomunicaciones.com/docs-json)
+
+
 ---
 
 ## 1. Características Principales
