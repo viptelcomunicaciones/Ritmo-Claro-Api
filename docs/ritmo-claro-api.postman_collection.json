@@ -1,8 +1,8 @@
 {
   "info": {
-    "_postman_id": "85a71f87-b6fd-492d-93a0-862c0ce0de96",
-    "name": "Ritmo Claro API - Taller Módulos 2 y 3",
-    "description": "Colección completa de pruebas para la API de gestión de hábitos Ritmo Claro.",
+    "_postman_id": "a98e21bc-4521-4f12-9c31-ritmoclaro2026",
+    "name": "Ritmo Claro API - Colección Oficial",
+    "description": "Colección completa y automatizada para Ritmo Claro API. Incluye scripts de prueba automáticos (pm.test) y captura dinámica de tokens (token Usuario A, tokenB Usuario B, adminToken y habitoId). Ejecutable de inicio a fin con el Runner de Postman sin configuración manual.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -13,6 +13,11 @@
     },
     {
       "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "tokenB",
       "value": "",
       "type": "string"
     },
@@ -29,83 +34,23 @@
   ],
   "item": [
     {
-      "name": "1. Autenticación",
+      "name": "1. Autenticación (Público)",
       "item": [
         {
-          "name": "1.1 Registro Válido (201 Created)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Ana Pérez\",\n  \"email\": \"ana.perez@ritmoclaro.com\",\n  \"password\": \"PasswordSegura123!\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "register"]
-            }
-          }
-        },
-        {
-          "name": "1.2 Registro con Email Duplicado (409 Conflict)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Ana Pérez Duplicada\",\n  \"email\": \"ana.perez@ritmoclaro.com\",\n  \"password\": \"PasswordSegura123!\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "register"]
-            }
-          }
-        },
-        {
-          "name": "1.3 Intento Inyección de Rol (400 Bad Request)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Hacker Intruso\",\n  \"email\": \"hacker@test.com\",\n  \"password\": \"PasswordSegura123!\",\n  \"rol\": \"ADMIN\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "register"]
-            }
-          }
-        },
-        {
-          "name": "1.4 Login Usuario Normal (200 OK - Guarda token)",
+          "name": "1.1 Registro de Usuario A (201 Created)",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "const response = pm.response.json();",
-                  "if (response.access_token) {",
-                  "    pm.collectionVariables.set('token', response.access_token);",
-                  "    console.log('Token de usuario guardado en variable {{token}}');",
-                  "}"
+                  "pm.test('Status code es 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('No expone passwordHash', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.not.have.property('passwordHash');",
+                  "    pm.expect(json.rol).to.eql('USUARIO');",
+                  "});"
                 ],
                 "type": "text/javascript"
               }
@@ -121,7 +66,46 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"ana.perez@ritmoclaro.com\",\n  \"password\": \"PasswordSegura123!\"\n}"
+              "raw": "{\n  \"nombre\": \"Carlos Mendoza\",\n  \"email\": \"carlos.mendoza.postman@empresa.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "1.2 Login de Usuario A (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Captura access_token de Usuario A', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('access_token');",
+                  "    pm.collectionVariables.set('token', json.access_token);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"carlos.mendoza.postman@empresa.com\",\n  \"password\": \"Password123!\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
@@ -131,17 +115,93 @@
           }
         },
         {
-          "name": "1.5 Login Admin (200 OK - Guarda adminToken)",
+          "name": "1.3 Registro de Usuario B (201 Created)",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "const response = pm.response.json();",
-                  "if (response.access_token) {",
-                  "    pm.collectionVariables.set('adminToken', response.access_token);",
-                  "    console.log('Token de admin guardado en variable {{adminToken}}');",
-                  "}"
+                  "pm.test('Status code es 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ana López\",\n  \"email\": \"ana.lopez.postman@empresa.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "1.4 Login de Usuario B (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Captura tokenB de Usuario B', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('access_token');",
+                  "    pm.collectionVariables.set('tokenB', json.access_token);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ana.lopez.postman@empresa.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "1.5 Login de Administrador (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Captura adminToken', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('access_token');",
+                  "    pm.collectionVariables.set('adminToken', json.access_token);",
+                  "});"
                 ],
                 "type": "text/javascript"
               }
@@ -169,20 +229,23 @@
       ]
     },
     {
-      "name": "2. CRUD de Hábitos (Usuario Regular)",
+      "name": "2. CRUD de Hábitos (Usuario A)",
       "item": [
         {
-          "name": "2.1 Crear Hábito (201 Created - Guarda habitoId)",
+          "name": "2.1 Crear Hábito de Usuario A (201 Created)",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "const response = pm.response.json();",
-                  "if (response.id) {",
-                  "    pm.collectionVariables.set('habitoId', response.id);",
-                  "    console.log('ID de hábito guardado en {{habitoId}}');",
-                  "}"
+                  "pm.test('Status code es 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Captura habitoId generado', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('id');",
+                  "    pm.collectionVariables.set('habitoId', json.id);",
+                  "});"
                 ],
                 "type": "text/javascript"
               }
@@ -208,7 +271,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Pausas activas y estiramiento\",\n  \"descripcion\": \"10 minutos al aire libre después del almuerzo\",\n  \"frecuencia\": \"DIARIA\"\n}"
+              "raw": "{\n  \"nombre\": \"Meditación y Mindfulness\",\n  \"descripcion\": \"Sesión de respiración antes de iniciar el trabajo\",\n  \"estado\": \"ACTIVO\",\n  \"frecuencia\": \"DIARIA\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/habitos",
@@ -218,7 +281,25 @@
           }
         },
         {
-          "name": "2.2 Listar Hábitos Propios (200 OK)",
+          "name": "2.2 Listar Hábitos Propios de Usuario A (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Devuelve lista de hábitos', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.be.an('array');",
+                  "    pm.expect(json.length).to.be.above(0);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "auth": {
               "type": "bearer",
@@ -241,6 +322,23 @@
         },
         {
           "name": "2.3 Consultar Hábito Propio por ID (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Retorna el hábito correcto', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.id).to.eql(pm.collectionVariables.get('habitoId'));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "auth": {
               "type": "bearer",
@@ -262,7 +360,25 @@
           }
         },
         {
-          "name": "2.4 Modificar Parcialmente con PATCH (200 OK)",
+          "name": "2.4 Actualizar Parcialmente Hábito Propio (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Conserva nombre y actualiza estado', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.estado).to.eql('PAUSADO');",
+                  "    pm.expect(json.nombre).to.eql('Meditación y Mindfulness');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "auth": {
               "type": "bearer",
@@ -283,7 +399,95 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"estado\": \"PAUSADO\"\n}"
+              "raw": "{\n  \"estado\": \"PAUSADO\",\n  \"descripcion\": \"Pausado temporalmente por semana de vacaciones\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/habitos/{{habitoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos", "{{habitoId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Control de Acceso y Propiedad (Ownership: Usuario B vs A)",
+      "item": [
+        {
+          "name": "3.1 Usuario B intenta consultar hábito de Usuario A (403 Forbidden)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 403 Forbidden', function () {",
+                  "    pm.response.to.have.status(403);",
+                  "});",
+                  "pm.test('Mensaje de violación de propiedad', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.message).to.eql('No tienes permiso para acceder a este hábito');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenB}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/habitos/{{habitoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos", "{{habitoId}}"]
+            }
+          }
+        },
+        {
+          "name": "3.2 Usuario B intenta modificar hábito de Usuario A (403 Forbidden)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 403 Forbidden', function () {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenB}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Nombre Modificado Ilegalmente\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/habitos/{{habitoId}}",
@@ -293,14 +497,27 @@
           }
         },
         {
-          "name": "2.5 Eliminar Hábito Propio (200 OK)",
+          "name": "3.3 Usuario B intenta eliminar hábito de Usuario A (403 Forbidden)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 403 Forbidden', function () {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "auth": {
               "type": "bearer",
               "bearer": [
                 {
                   "key": "token",
-                  "value": "{{token}}",
+                  "value": "{{tokenB}}",
                   "type": "string"
                 }
               ]
@@ -317,10 +534,23 @@
       ]
     },
     {
-      "name": "3. Control de Roles (RBAC y Ownership)",
+      "name": "4. Control de Roles (RBAC: ADMIN vs Usuario Normal)",
       "item": [
         {
-          "name": "3.1 Intento Acceso Ruta Admin con Usuario Normal (403 Forbidden)",
+          "name": "4.1 Usuario Normal intenta listar todos los hábitos (403 Forbidden)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 403 Forbidden', function () {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "auth": {
               "type": "bearer",
@@ -342,7 +572,27 @@
           }
         },
         {
-          "name": "3.2 Consulta Global con Rol ADMIN (200 OK)",
+          "name": "4.2 Administrador lista todos los hábitos globalmente (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('No incluye passwordHash del autor', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.be.an('array');",
+                  "    if (json.length > 0 && json[0].usuario) {",
+                  "        pm.expect(json[0].usuario).to.not.have.property('passwordHash');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "auth": {
               "type": "bearer",
@@ -362,9 +612,62 @@
               "path": ["habitos", "admin", "todos"]
             }
           }
+        }
+      ]
+    },
+    {
+      "name": "5. Eliminación de Recurso Propio (Usuario A)",
+      "item": [
+        {
+          "name": "5.1 Eliminar Hábito Propio (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/habitos/{{habitoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitos", "{{habitoId}}"]
+            }
+          }
         },
         {
-          "name": "3.3 Acceso a Hábito Inexistente (404 Not Found)",
+          "name": "5.2 Comprobar que ya no existe (404 Not Found)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 404 Not Found', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "auth": {
               "type": "bearer",
@@ -379,19 +682,39 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/habitos/00000000-0000-0000-0000-000000000000",
+              "raw": "{{baseUrl}}/habitos/{{habitoId}}",
               "host": ["{{baseUrl}}"],
-              "path": ["habitos", "00000000-0000-0000-0000-000000000000"]
+              "path": ["habitos", "{{habitoId}}"]
             }
           }
         }
       ]
     },
     {
-      "name": "4. Validaciones, Errores y Seguridad (Parte 7)",
+      "name": "6. Matriz de Validaciones y Errores (Contrato de Error)",
       "item": [
         {
-          "name": "4.1 Registro - Nombre < 2 caracteres (400 Bad Request)",
+          "name": "6.1 Error 400: Registro con nombre < 2 caracteres",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('Cumple contrato de error { statusCode, timestamp, path, message }', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('statusCode', 400);",
+                  "    pm.expect(json).to.have.property('timestamp');",
+                  "    pm.expect(json).to.have.property('path');",
+                  "    pm.expect(json).to.have.property('message');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -412,7 +735,20 @@
           }
         },
         {
-          "name": "4.2 Registro - Email Inválido (400 Bad Request)",
+          "name": "6.2 Error 400: Registro con email inválido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -423,7 +759,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Usuario Test\",\n  \"email\": \"correo-sin-formato\",\n  \"password\": \"Password123!\"\n}"
+              "raw": "{\n  \"nombre\": \"Usuario Test\",\n  \"email\": \"formato-invalido\",\n  \"password\": \"Password123!\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/auth/register",
@@ -433,7 +769,20 @@
           }
         },
         {
-          "name": "4.3 Registro - Inyección de Campo rol (400 Bad Request)",
+          "name": "6.3 Error 400: Registro con contraseña < 8 caracteres",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -444,7 +793,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Usuario Test\",\n  \"email\": \"inyeccion@test.com\",\n  \"password\": \"Password123!\",\n  \"rol\": \"ADMIN\"\n}"
+              "raw": "{\n  \"nombre\": \"Usuario Test\",\n  \"email\": \"passcorta@test.com\",\n  \"password\": \"123\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/auth/register",
@@ -454,7 +803,54 @@
           }
         },
         {
-          "name": "4.4 Hábitos - Enum Frecuencia Inválido (400 Bad Request)",
+          "name": "6.4 Error 400: Registro con campo 'rol' no permitido (forbidNonWhitelisted)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Usuario Inyector\",\n  \"email\": \"inyeccion@test.com\",\n  \"password\": \"Password123!\",\n  \"rol\": \"ADMIN\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "6.5 Error 400: Hábito con enum de frecuencia inválido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "auth": {
               "type": "bearer",
@@ -485,7 +881,20 @@
           }
         },
         {
-          "name": "4.5 Hábitos - Nombre < 3 caracteres (400 Bad Request)",
+          "name": "6.6 Error 400: Hábito con nombre < 3 caracteres",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "auth": {
               "type": "bearer",
@@ -516,7 +925,24 @@
           }
         },
         {
-          "name": "4.6 Registro - Email Duplicado (409 Conflict)",
+          "name": "6.7 Error 409: Registro con correo electrónico duplicado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 409 Conflict', function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});",
+                  "pm.test('Mensaje de correo ya registrado', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.message).to.eql('El correo electrónico ya se encuentra registrado');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -527,7 +953,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Usuario Duplicado\",\n  \"email\": \"carlos.mendoza@empresa.com\",\n  \"password\": \"Password123!\"\n}"
+              "raw": "{\n  \"nombre\": \"Carlos Mendoza Duplicado\",\n  \"email\": \"carlos.mendoza.postman@empresa.com\",\n  \"password\": \"Password123!\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/auth/register",
@@ -537,7 +963,24 @@
           }
         },
         {
-          "name": "4.7 Login - Credenciales Inválidas (401 Unauthorized)",
+          "name": "6.8 Error 401: Login con credenciales incorrectas (mensaje genérico)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 401 Unauthorized', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "pm.test('Mensaje genérico sin enumeración', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.message).to.eql('Credenciales inválidas');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -548,7 +991,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"carlos.mendoza@empresa.com\",\n  \"password\": \"PasswordErronea!\"\n}"
+              "raw": "{\n  \"email\": \"carlos.mendoza.postman@empresa.com\",\n  \"password\": \"PasswordErronea!\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
@@ -558,7 +1001,20 @@
           }
         },
         {
-          "name": "4.8 Hábitos - Sin Token (401 Unauthorized)",
+          "name": "6.9 Error 401: Petición a recurso protegido sin token Bearer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 401 Unauthorized', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [],
@@ -570,14 +1026,27 @@
           }
         },
         {
-          "name": "4.9 Hábitos - Token Alterado (401 Unauthorized)",
+          "name": "6.10 Error 401: Petición con token JWT alterado o corrupto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 401 Unauthorized', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "auth": {
               "type": "bearer",
               "bearer": [
                 {
                   "key": "token",
-                  "value": "{{token}}alterado",
+                  "value": "{{token}}manipulado",
                   "type": "string"
                 }
               ]
@@ -592,29 +1061,24 @@
           }
         },
         {
-          "name": "4.10 Hábitos - Ownership Ajeno (403 Forbidden)",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/habitos/{{habitoId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["habitos", "{{habitoId}}"]
+          "name": "6.11 Error 404: Consulta de hábito con ID inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 404 Not Found', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "pm.test('Mensaje de hábito no encontrado', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.message).to.eql('Hábito no encontrado');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
             }
-          }
-        },
-        {
-          "name": "4.11 Hábitos - Recurso Inexistente (404 Not Found)",
+          ],
           "request": {
             "auth": {
               "type": "bearer",
